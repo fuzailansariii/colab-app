@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
           }
 
           //   if found then check password and return the values
-          const isMatched = bcrypt.compare(password, user.password);
+          const isMatched = await bcrypt.compare(password, user.password);
           if (!isMatched) {
             throw new Error("Incorrect Password");
           }
@@ -51,6 +51,9 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -60,7 +63,7 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ token, session }) {
+    async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
         session.user.email = token.email;

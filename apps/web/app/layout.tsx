@@ -3,6 +3,7 @@ import "./globals.css";
 import { Nunito, Quicksand } from "next/font/google";
 import Navbar from "../components/Navbar";
 import { Toaster } from "sonner";
+import AuthProvider from "../porviders/AuthProvider";
 
 const quicksand = Quicksand({
   variable: "--font-quicksand",
@@ -26,9 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="forest">
       <body className={`${quicksand.variable} ${nunito.variable}`}>
-        <Navbar />
-        <Toaster position="top-center" />
-        {children}
+        <AuthProvider>
+          <Navbar />
+          <Toaster position="top-center" />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
