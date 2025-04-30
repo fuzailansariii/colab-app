@@ -11,17 +11,22 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.0.1",
     "@repo/auth": "workspace:*",
+    "@repo/common": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@repo/common": "workspace:*",
     "@tailwindcss/postcss": "^4.1.4",
+    "axios": "^1.9.0",
     "next": "^15.3.0",
     "next-auth": "^4.24.11",
     "postcss": "^8.5.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "tailwindcss": "^4.1.4"
+    "react-hook-form": "^7.56.1",
+    "sonner": "^2.0.3",
+    "tailwindcss": "^4.1.4",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

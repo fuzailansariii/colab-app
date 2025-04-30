@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Nunito, Quicksand } from "next/font/google";
+import Navbar from "../components/Navbar";
+import { Toaster } from "sonner";
 
 const quicksand = Quicksand({
   variable: "--font-quicksand",
@@ -22,8 +24,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="black">
+    <html lang="en" data-theme="forest">
       <body className={`${quicksand.variable} ${nunito.variable}`}>
+        <Navbar />
+        <Toaster position="top-center" />
         {children}
       </body>
     </html>
