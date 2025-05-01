@@ -41,7 +41,7 @@ export default function Navbar() {
               >
                 <li className="flex space-x-2">
                   <p>
-                    Hello, <span>{session.user?.fullName?.split(" ")[1]}</span>
+                    Hello, <span>{session.user?.fullName?.split(" ")[0]}</span>
                   </p>
                 </li>
                 <li>
