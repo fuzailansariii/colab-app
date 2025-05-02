@@ -10,7 +10,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
-import { useState } from "react";
 
 export default function Login() {
   const router = useRouter();
@@ -91,7 +90,7 @@ export default function Login() {
             {isSubmitting ? "Logging in..." : "Login"}
           </button>
           <p className="text-sm text-center text-gray-500">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/sign-up" className="text-blue-500 hover:underline">
               Sign Up
             </Link>

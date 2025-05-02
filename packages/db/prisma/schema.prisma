@@ -14,10 +14,20 @@ datasource db {
 }
 
 model User {
-  id        String   @id @unique @default(uuid())
+  id        String   @id @default(uuid())
   fullName  String
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  rooms     Room[]
+}
+
+model Room {
+  id        String   @id @default(uuid())
+  roomTitle String
+  joiningId String   @unique
+  createdAt DateTime @default(now())
+  createdBy String
+  user      User     @relation(fields: [createdBy], references: [id])
 }
