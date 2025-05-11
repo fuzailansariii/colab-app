@@ -14,6 +14,7 @@ interface CreateRoomProps {
   type: string;
   placeholder: string;
   title: string;
+  fetchRooms: () => void;
 }
 
 export default function CreateRoom({
@@ -22,6 +23,7 @@ export default function CreateRoom({
   type,
   placeholder,
   title,
+  fetchRooms,
 }: CreateRoomProps) {
   const {
     register,
@@ -50,6 +52,7 @@ export default function CreateRoom({
         });
         closeModal();
         reset(); // Reset the form fields
+        fetchRooms();
       }
     } catch (error) {
       console.error("Error creating/joining room:", error);

@@ -14,7 +14,11 @@ export async function GET() {
         { status: 401 }
       );
     }
-    const allRooms = await prisma.room.findMany();
+    const allRooms = await prisma.room.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
     return NextResponse.json(
       {
