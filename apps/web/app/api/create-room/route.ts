@@ -2,12 +2,12 @@ import prisma from "@repo/db/client";
 import { NextRequest, NextResponse } from "next/server";
 import generateJoiningId from "../../../lib/generateJoiningId";
 import { auth } from "@repo/auth/checkAuth";
-import { roomSchema } from "@repo/common/types";
+import { CreateRoomSchema } from "@repo/common/types";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const parsedData = roomSchema.safeParse(body);
+    const parsedData = CreateRoomSchema.safeParse(body);
 
     if (!parsedData.success) {
       return NextResponse.json(

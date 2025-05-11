@@ -1,12 +1,11 @@
 "use client";
-import React, { useEffect, useRef } from "react";
-import Rooms from "../rooms/page";
-import CreateJoinRoom from "../../../components/JoinRoom";
+import { useEffect, useRef, useState } from "react";
+import Rooms from "../../../components/Rooms";
+import JoinRoom from "../../../components/JoinRoom";
+import CreateRoom from "../../../components/CreateRoom";
 
 export default function Dashboard() {
-  const [modalType, setModelType] = React.useState<"join" | "create" | null>(
-    null
-  );
+  const [modalType, setModelType] = useState<"join" | "create" | null>(null);
   const modalRef = useRef<HTMLDialogElement | null>(null);
 
   useEffect(() => {
@@ -28,7 +27,7 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-screen-xl mx-auto">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center p-4">
         <h1 className="text-xl font-quicksand font-bold">Dashboard</h1>
 
         <div className="flex gap-4 items-center">
@@ -46,26 +45,26 @@ export default function Dashboard() {
           </button>
           {/* Modal for Join Room and Create Room */}
           {modalType === "join" && (
-            <CreateJoinRoom
+            <JoinRoom
               modalRef={modalRef}
               closeModal={closeModal}
-              placeholder={"Enter Joining Code"}
+              placeholder={"Enter Joining ID"}
               type={"text"}
               title={"Join Room"}
             />
           )}
           {modalType === "create" && (
-            <CreateJoinRoom
+            <CreateRoom
               modalRef={modalRef}
               closeModal={closeModal}
-              placeholder={"Enter Room Name"}
+              placeholder={"Enter Room Title"}
               type={"text"}
               title={"Create Room"}
             />
           )}
         </div>
       </div>
-      <div>
+      <div className="flex flex-col gap-4 mt-4">
         <Rooms />
       </div>
     </div>

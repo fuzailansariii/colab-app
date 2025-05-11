@@ -4,11 +4,11 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { JoinRoomSchema } from "@repo/common/types";
+import { CreateRoomSchema } from "@repo/common/types";
 import axios from "axios";
 import { toast } from "sonner";
 
-interface JoinRoomProps {
+interface CreateRoomProps {
   modalRef: React.RefObject<HTMLDialogElement | null>;
   closeModal: () => void;
   type: string;
@@ -16,36 +16,48 @@ interface JoinRoomProps {
   title: string;
 }
 
-export default function JoinRoom({
+export default function CreateRoom({
   modalRef,
   closeModal,
   type,
   placeholder,
   title,
-}: JoinRoomProps) {
+}: CreateRoomProps) {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<z.infer<typeof JoinRoomSchema>>({
-    resolver: zodResolver(JoinRoomSchema),
+  } = useForm<z.infer<typeof CreateRoomSchema>>({
+    resolver: zodResolver(CreateRoomSchema),
     defaultValues: {
-      roomId: "",
+      roomTitle: "",
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof JoinRoomSchema>) => {
-    console.log(data);
-    // Call the API to create or join the room
+  const onSubmit = async (data: z.infer<typeof CreateRoomSchema>) => {
+    // API Call to create the room
+    try {
+      const roomTitle = data.roomTitle;
+      const response = await axios.post("/api/create-room", {
+        roomTitle,
+      });
 
-    reset();
+      if (response.status === 201) {
+        toast.success(response.data.message, {
+          description:
+            "Your friend can now join the room using the joining code.",
+        });
+        closeModal();
+        reset(); // Reset the form fields
+      }
+    } catch (error) {
+      console.error("Error creating/joining room:", error);
+    }
   };
 
   return (
     <div>
-      {/* You can open the modal using document.getElementById('ID').showModal() method */}
-
       <dialog ref={modalRef} className="modal">
         <div className="modal-box">
           {/* if there is a button in form, it will close the modal */}
@@ -59,14 +71,14 @@ export default function JoinRoom({
             <h3 className="font-bold text-xl font-quicksand">{title}</h3>
             <div className="flex flex-col gap-2 mt-4 max-w-sm mx-auto">
               <input
-                {...register("roomId")}
+                {...register("roomTitle")}
                 type={type}
                 className="input rounded-lg w-full"
                 placeholder={placeholder}
               />
-              {errors.roomId && (
+              {errors.roomTitle && (
                 <span className="text-red-500 text-sm">
-                  {errors.roomId.message}
+                  {errors.roomTitle.message}
                 </span>
               )}
 
@@ -75,7 +87,7 @@ export default function JoinRoom({
                 type="submit"
                 className="btn btn-primary mt-4 rounded-lg"
               >
-                {isSubmitting ? "Joining..." : <>{title}</>}
+                {isSubmitting ? "Loading..." : <>{title}</>}
               </button>
             </div>
           </form>

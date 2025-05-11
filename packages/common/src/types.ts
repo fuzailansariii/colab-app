@@ -8,6 +8,10 @@ export const SignupSchema = z.object({
     .transform((val) => val.trim().toLowerCase()),
   password: z.string().min(6, "Password must be at least 6 characters").trim(),
 });
-export const roomSchema = z.object({
-  roomTitle: z.string().min(1, { message: "Room Title if required" }).trim(),
+export const CreateRoomSchema = z.object({
+  roomTitle: z.string().min(1, { message: "Room Title is required" }).trim(),
+});
+
+export const JoinRoomSchema = z.object({
+  roomId: z.string().min(1, { message: "Joining ID is required" }).trim(),
 });
