@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { JoinRoomSchema } from "@repo/common/types";
 import axios from "axios";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface JoinRoomProps {
   modalRef: React.RefObject<HTMLDialogElement | null>;
@@ -23,6 +24,8 @@ export default function JoinRoom({
   placeholder,
   title,
 }: JoinRoomProps) {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -37,9 +40,19 @@ export default function JoinRoom({
 
   const onSubmit = async (data: z.infer<typeof JoinRoomSchema>) => {
     console.log(data);
+    const joiningID = data.roomId;
     // Call the API to create or join the room
-
-    reset();
+    try {
+      router.push(`/chat/${joiningID}`);
+      reset();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error Joining Room", error.message);
+        toast.error("Failed to join room");
+      } else {
+        console.error("Error joining room", error);
+      }
+    }
   };
 
   return (

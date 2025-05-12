@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import DeleteIcon from "../icons/DeleteIcon";
 import { toast } from "sonner";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 interface RoomCardProps {
   id: string;
@@ -20,8 +21,10 @@ export default function RoomCard({
   createdBy,
   fetchRooms,
 }: RoomCardProps) {
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const router = useRouter();
   const deleteRoomRef = useRef<HTMLDialogElement>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const openDeleteModal = () => {
     deleteRoomRef.current?.showModal();
   };
@@ -55,6 +58,22 @@ export default function RoomCard({
     }
   };
 
+  const handleJoinRoom = async () => {
+    try {
+      setIsSubmitting(true);
+      router.push(`/chat/${joiningId}`);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(error.message);
+        toast.error("Error joining Room");
+      } else {
+        console.error("Something went wrong");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="card w-96 bg-base-100 card-md shadow-sm">
       <div className="card-body">
@@ -67,7 +86,17 @@ export default function RoomCard({
         <p className="font-nunito">JoiningID: {joiningId}</p>
         <p className="font-nunito">CreatedBy: {createdBy}</p>
         <div className="justify-end card-actions">
-          <button className="btn btn-primary rounded-md">Join Room</button>
+          <button
+            onClick={handleJoinRoom}
+            disabled={isSubmitting}
+            className="btn btn-primary rounded-md"
+          >
+            {isSubmitting ? (
+              <span className="loading loading-spinner loading-sm" />
+            ) : (
+              "Join Room"
+            )}
+          </button>
         </div>
 
         {/* Are You sure "delete" */}
