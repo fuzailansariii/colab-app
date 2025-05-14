@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import generateJoiningId from "../../../lib/generateJoiningId";
 import { auth } from "@repo/auth/checkAuth";
 import { CreateRoomSchema } from "@repo/common/types";
+import redis from "@repo/redis/index";
 
 export async function POST(req: NextRequest) {
   try {
@@ -44,6 +45,9 @@ export async function POST(req: NextRequest) {
         createdBy: userId,
       },
     });
+
+    // await redis.set(`joiningId:${response.joiningId}`, response.id);
+
     return NextResponse.json(
       {
         success: true,

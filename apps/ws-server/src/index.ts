@@ -1,29 +1,62 @@
-import { WebSocketServer } from "ws";
+import { WebSocketServer, WebSocket } from "ws";
 import redis from "@repo/redis/index";
+
+const roomSocketsMap = new Map<string, Set<WebSocket>>();
+const socketToRoomMap = new Map<WebSocket, string>();
+
 const wss = new WebSocketServer({ port: 8080 });
 
 wss.on("connection", (ws) => {
   ws.on("message", async (message) => {
     try {
-      const parsedData = JSON.parse(message as unknown as string);
-      const { joiningId } = parsedData.payload;
-      const roomId = await redis.get(`joiningID:${joiningId}`);
-      if (!roomId) {
-        ws.send(JSON.stringify({ error: "Room doesn't exist" }));
-        return;
+      const parsedData = JSON.parse(message.toString());
+      const { type, payload } = parsedData;
+
+      // Handle joining room
+      if (type === "join_room") {
+        // Check for valid payload
+        if (!payload?.joiningId || !payload?.userId) {
+          ws.send(JSON.stringify({ error: "Invalid payload" }));
+          return;
+        }
+
+        // Get joiningId and userId from the payload
+        const { joiningId, userId } = payload;
+        console.log(`joiningId: ${joiningId}, userId: ${userId}`);
+        const roomId = await redis.get(`joiningId:${joiningId}`);
+        if (!roomId) {
+          ws.send(JSON.stringify({ error: "Room doesn't exist" }));
+          return;
+        }
+
+        // add socket to room
+        if (!roomSocketsMap.has(roomId)) {
+          roomSocketsMap.set(roomId, new Set());
+        }
+        roomSocketsMap.get(roomId)!.add(ws);
+        socketToRoomMap.set(ws, roomId);
+
+        ws.send(
+          JSON.stringify({ success: true, message: `Joined room ${roomId}` })
+        );
       }
-      const isMember = await redis.sismember(`room:${roomId}`, joiningId);
-      if (!isMember) {
-        ws.send(JSON.stringify({ error: "You are not allowed in this room" }));
-        return;
-      }
-      ws.send(JSON.stringify({ success: true, roomId }));
-      // Further logic to add the user to the active WebSocket room
-    } catch (error) {}
+    } catch (error) {
+      ws.send(JSON.stringify({ error: "something went wrong." }));
+    }
   });
 
-  //   on disconnecting
-  ws.on("disconnect", () => {
-    console.log("User disconnected: ", ws);
+  // Clean up on disconnect
+  ws.on("close", () => {
+    const roomId = socketToRoomMap.get(ws);
+    if (roomId) {
+      const sockets = roomSocketsMap.get(roomId);
+      if (sockets) {
+        sockets.delete(ws);
+        if (sockets.size === 0) {
+          roomSocketsMap.delete(roomId);
+        }
+      }
+    }
+    socketToRoomMap.delete(ws);
   });
 });
