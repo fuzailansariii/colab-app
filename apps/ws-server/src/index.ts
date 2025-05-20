@@ -40,6 +40,27 @@ wss.on("connection", (ws) => {
           JSON.stringify({ success: true, message: `Joined room ${roomId}` })
         );
       }
+      if (type === "chat") {
+        const { message, userId } = parsedData.payload;
+        const roomId = socketToRoomMap.get(ws);
+        if (!roomId) {
+          ws.send(JSON.stringify({ error: "You are not in a room" }));
+          return;
+        }
+        const sockets = roomSocketsMap.get(roomId);
+        if (!sockets) {
+          return;
+        }
+        const data = JSON.stringify({
+          userId,
+          message,  
+        });
+        sockets.forEach((client) => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(data);
+          }
+        });
+      }
     } catch (error) {
       ws.send(JSON.stringify({ error: "something went wrong." }));
     }
